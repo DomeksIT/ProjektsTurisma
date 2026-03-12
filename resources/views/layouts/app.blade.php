@@ -6,6 +6,7 @@
     <title>{{ $title ?? 'SELENAL - Ceļojumi' }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}">
+    
 </head>
 <body>
     <nav class="navbar navbar -expand-lg navbar-dark nav-glass sticky-top">
@@ -16,6 +17,11 @@
                 <div class="fw-bold">SELENA L</div>
                 <div class="small text-white-50">Tūrisma aģentūra</div>
             </div>
+<a href="/login" class="admin-btn">
+    <span class="admin-icon">🔐</span>
+    Admin
+</a>
+</div>
         </a>
         <button class="navbar-toggler" type="button" data-bs-toogle="collapse" data-bs-target="#nav">
             <span class="navbar-toggler-icon"></span>

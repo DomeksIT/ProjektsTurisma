@@ -88,3 +88,24 @@ body{ background: var(--bg); color:var(--text);}
 .container{
     max-width: 1200px;
 }
+.admin-btn{
+    display:flex;
+    align-items:center;
+    gap:6px;
+    padding:6px 14px;
+    color:white;
+    text-decoration: none;
+    font-size:14px;
+    font-weight: 500;
+    border-radius:8px;
+    background: rgba(255,255,255,0.08);
+    border: 1px solid rgba(255,255,255,0.15);
+    backdrop-filter: blur(8px);
+    transition:0.25s;
+}
+.admin-btn:hover{
+    background: rgba(0,255,170,0.15);
+    border-color:#00e0a8;
+    color:#00e0a8;
+    transform:translateY(-1px);
+}

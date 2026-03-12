@@ -12,7 +12,7 @@
 <div class="row g-4">
 @foreach ($tours as $tour)
 @php
-$img=asset('images/tours/'.$tour->id.'.jpg');
+$img=asset('storage/'.$tour->image);
 @endphp
 <div class="col-md-6 col-lg-4">
 <div class="card-tour h-100">
