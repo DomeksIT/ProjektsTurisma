@@ -50,6 +50,9 @@ box-shadow:none;
 Atpakaļ uz katalogu
 </a>
 <h1 class="mb-3">{{ $tour->title }}</h1>
+<div class="text-info mb-2">
+Kategorija: {{ $tour->category ?? 'Nav kategorijas' }}
+</div>
 <div class="mb-2">
 <b>Cena:</b> {{ $tour->price }} {{ $tour->currency }}
 </div>

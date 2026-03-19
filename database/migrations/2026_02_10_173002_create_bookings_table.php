@@ -13,9 +13,16 @@ class CreateBookingsTable extends Migration
      */
     public function up()
     {
-        Schema::create('bookings', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
+Schema::create('bookings', function (Blueprint $table) {
+$table->id();
+$table->foreignID('tour_id')
+->constrained('tours')
+->cascadeOnDelete();
+$table->string('name');
+$table->string('email');
+$table->string('phone')->nullable();
+$table->string('status')->default('new');
+$table->timestamps();
         });
     }
 

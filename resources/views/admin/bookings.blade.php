@@ -5,6 +5,9 @@
 Saņemtie pieteikumi
 </h2>
 <div class="mb-4">
+<a href="/admin/categories" class="btn btn-outline-light">
+📂 Kategorijas
+</a>
 <a href="/admin/tours" class="btn btn-outline-light">
 📍 Ceļojumi
 </a>

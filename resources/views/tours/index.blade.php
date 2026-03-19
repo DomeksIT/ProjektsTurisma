@@ -28,6 +28,9 @@ alt="{{ $tour->title }}">
 </div>
 <div class="p-4">
 <h5 class="text-white fw-bold">{{ $tour->title }}</h5>
+<div class="text-info small mb-1">
+{{ $tour->category ?? 'Nav kategorijas' }}
+</div>
 <div class="text-white-50 small mb-3">
     {{ $tour->start_date }} - {{ $tour->end_date }}
 </div>

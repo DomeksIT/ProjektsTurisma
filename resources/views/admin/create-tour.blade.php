@@ -9,48 +9,36 @@ Jauns ceļojums
 <form method="POST" action="/admin/tours/store" enctype="multipart/form-data">
 @csrf
 <div class="mb-3">
-<input
-type="text"
-name="title"
-class="form-control"
-placeholder="Nosaukums"
-required>
+<input type="text" name="title" class="form-control" placeholder="Nosaukums" required>
 </div>
 <div class="mb-3">
-<input
-type="number"name="price"class="form-control"placeholder="Cena"required>
+<input type="number" name="price" class="form-control" placeholder="Cena" required>
+</div>
+<div class="mb-3">
+<label class="text-white-50">Kategorija</label>
+<select name="category_id" class="form-control">
+<option value="">Nav kategorijas</option>
+@foreach($categories as $category)
+<option value="{{ $category->id }}">
+{{ $category->name }}
+</option>
+@endforeach
+</select>
 </div>
 <div class="mb-3">
 <label class="text-white-50">Sākuma datums</label>
-<input
-type="date"
-name="start_date"
-class="form-control"
-required>
+<input type="date" name="start_date" class="form-control" required>
 </div>
 <div class="mb-3">
 <label class="text-white-50">Beigu datums</label>
-<input
-type="date"
-name="end_date"
-class="form-control"
-required>
+<input type="date" name="end_date" class="form-control" required>
 </div>
 <div class="mb-3">
-<textarea
-name="description"
-class="form-control"
-rows="3"
-placeholder="Apraksts"
-required></textarea>
+<textarea name="description" class="form-control" rows="3" placeholder="Apraksts" required></textarea>
 </div>
 <div class="mb-4">
 <label class="text-white-50">Bilde</label>
-<input
-type="file"
-name="image"
-class="form-control"
-required>
+<input type="file" name="image" class="form-control" required>
 </div>
 <button class="btn btn-success w-100">
 Pievienot tūri
