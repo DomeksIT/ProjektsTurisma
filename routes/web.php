@@ -23,3 +23,10 @@ Route::post('/admin/categories/store', [AdminController::class,'storeCategory'])
 Route::get('/admin/categories/edit/{id}', [AdminController::class,'editCategory']);
 Route::post('/admin/categories/update/{id}', [AdminController::class,'updateCategory']);
 Route::get('/admin/categories/delete/{id}', [AdminController::class,'deleteCategory']);
+Route::get('/request', function () {
+return view('request');
+});
+Route::post('/request', [TourController::class, 'request']);
+Route::get('/admin/requests/{id}/done', [TourController::class, 'requestDone']);
+Route::get('/admin/requests/{id}/cancel', [TourController::class, 'requestCancel']);
+ 

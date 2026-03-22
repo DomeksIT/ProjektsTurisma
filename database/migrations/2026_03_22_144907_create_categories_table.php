@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddTourIdToBookingsTable extends Migration
+class CreateCategoriesTable extends Migration
 {
     /**
      * Run the migrations.
@@ -12,11 +12,13 @@ class AddTourIdToBookingsTable extends Migration
      * @return void
      */
     public function up()
-    {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->unsignedBigInteger('tour_id')->after('id');
-        });
-    }
+{
+   Schema::create('categories', function (Blueprint $table) {
+       $table->id();
+       $table->string('name');
+       $table->timestamps();
+   });
+}
 
     /**
      * Reverse the migrations.
@@ -25,8 +27,6 @@ class AddTourIdToBookingsTable extends Migration
      */
     public function down()
     {
-        Schema::table('bookings', function (Blueprint $table) {
-            $table->dropColumn('tour_id');
-        });
+        Schema::dropIfExists('categories');
     }
 }

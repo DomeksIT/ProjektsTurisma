@@ -4,27 +4,47 @@
 <meta charset="UTF-8">
 <title>Admin panelis</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-<Style>
-body{
-background:#0b1220;
-color:white;
+<style>
+body {
+   background: radial-gradient(circle at top, #0f1b35, #0b1220);
+   color:white;
+   min-height:100vh;
 }
 .admin-header{
-    background:#111927;
-    padding:15px;
+   display:flex;
+   justify-content:center;
+   align-items:center;
+   padding:25px;
+   position:relative;
 }
-</Style>
+.btn-back{
+   position:absolute;
+   left:20px;
+   background: white(255,255,255,0.05);
+   backdrop-filter: blur(10px);
+   border:1px solid rgba(255,255,255,0.2);
+   color:#ffffff;
+   padding:10px 16px;
+   border-radius:10px;
+   text-decoration:none;
+   font-weight:500;
+   transition:0.2s;
+}
+.btn-back:hover{
+   background:#22c55e;
+   color:black;
+}
+</style>
 </head>
 <body>
-<div class="admin-header d-flex justify-content-between align-items-center">
-<h4 class="m-0">Admin panelis</h4>
-<a href="{{url('/')}}" class="btn btn-outline-light btn-sm">
+<div class="admin-header">
+<a href="/" class="btn-back">
 Atpakaļ uz mājaslapu
 </a>
+<h4>Admin panelis</h4>
 </div>
 <div class="container mt-4">
-@yield('content')
+   @yield('content')
 </div>
 </body>
 </html>
-
