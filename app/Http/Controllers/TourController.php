@@ -89,6 +89,7 @@ public function request(Request $request)
    $request->validate([
        'name' => ['required','min:3','max:50','regex:/^[A-Za-zĀ-ž\s]+$/u'],
        'phone' => ['required','regex:/^\+?[0-9]{8,15}$/'],
+       'email' => 'required|email',
        'destination' => ['required','min:2'],
        'description' => ['required','min:5'],
        'dates' => ['required']
@@ -99,6 +100,8 @@ public function request(Request $request)
        'name.regex' => 'Tikai burti',
        'phone.required' => 'Ievadiet telefonu',
        'phone.regex' => 'Derīgs numurs (8-15 cipari)',
+       'email.required' => 'Ievadiet e-pastu',
+       'email.email' => 'Nepareizs e-pasts',  
        'destination.required' => 'Ievadiet galamērķi',
        'destination.min' => 'Vismaz 2 simboli',
        'description.required' => 'Ievadiet aprakstu',
@@ -108,6 +111,7 @@ public function request(Request $request)
    DB::table('requests')->insert([
        'name' => $request->name,
        'phone' => $request->phone,
+       'email'=>$request->email,
        'destination' => $request->destination,
        'description' => $request->description,
        'dates' => $request->dates,

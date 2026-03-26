@@ -61,6 +61,7 @@ Atcelt
 <th>ID</th>
 <th>Vārds Uzvārds</th>
 <th>Telefons</th>
+<th>E-pasts</th>
 <th>Galamērķis</th>
 <th>Datumi</th>
 <th>Apraksts</th>
@@ -75,6 +76,7 @@ Atcelt
 <td>{{ $r->id }}</td>
 <td>{{ $r->name }}</td>
 <td>{{ $r->phone ?? '-' }}</td>
+<td>{{ $r->email }}</td>
 <td>{{ $r->destination }}</td>
 <td>{{ $r->dates }}</td>
 <td>{{ $r->description }}</td>

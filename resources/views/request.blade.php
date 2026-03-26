@@ -112,6 +112,20 @@ placeholder="+371 20000000">
    {{ $message }}
 </div>
 @enderror
+<div class="mb-3">
+<label class="text-white">E-pasts</label>
+<input
+type="email"
+name="email"
+value="{{ old('email') }}"
+class="form-control @error('email') is-invalid @enderror"
+placeholder="piemers@email.com">
+@error('email')
+<div class="invalid-feedback">
+{{ $message }}
+</div>
+@enderror
+</div>
 </div>
 <div class="mb-3">
 <label class="text-white">Vēlamais galamērķis</label>
