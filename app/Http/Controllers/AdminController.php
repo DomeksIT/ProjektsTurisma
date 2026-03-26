@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
 
@@ -15,10 +15,14 @@ public function login()
 
 public function auth(Request $request)
 {
-    if($request->username=="admin" && $request->password=="1234"){
-        return redirect('/admin/bookings');
-    }
-    return back()->with('error','Nepareizs lietotājvārds vai parole');
+if (Auth::attempt([
+   'email' => $request->email,
+   'password' => $request->password
+])) {
+   return redirect('/admin/bookings');
+} else {
+   return back()->with('error', 'Nepareizs e-pasts vai parole!');
+}
 }
 
 public function tours()

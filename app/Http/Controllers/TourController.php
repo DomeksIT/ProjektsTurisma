@@ -31,15 +31,16 @@ return view('tours.show',[
 public function apply(Request $request, $id)
 {
    $request->validate([
-       'name' => ['required','min:3','regex:/^[A-Za-zĀ-ž\s]+$/u'],
+       'name' => ['required','min:3','max:50','regex:/^[A-Za-zĀ-ž\s]+$/u'],
        'email' => 'required|email',
        'phone' => ['required','regex:/^\+?[0-9]{8,15}$/']
    ], [
        'name.required' => 'Ievadiet vārdu un uzvārdu',
        'name.min' => 'Vārdam jābūt vismaz 3 simboliem',
+       'name.max' => 'Vārdam jābūt ne vairāk kā 50 simboliem',
        'name.regex' => 'Vārdā drīkst būt tikai burti',
        'email.required' => 'Ievadiet e-pastu',
-       'email.email' => 'Nepareizs e-pasts',
+       'email.email' => 'Nepareizs e-pasts',  
        'phone.required' => 'Ievadiet telefonu',
        'phone.regex' => 'Ievadiet derīgu telefona numuru (8-15 cipari)'
    ]);
@@ -86,33 +87,35 @@ return redirect('/admin/bookings');
 public function request(Request $request)
 {
    $request->validate([
-       'name' => ['required','min:3','regex:/^[A-Za-zĀ-ž\s]+$/u'],
+       'name' => ['required','min:3','max:50','regex:/^[A-Za-zĀ-ž\s]+$/u'],
+       'phone' => ['required','regex:/^\+?[0-9]{8,15}$/'],
        'destination' => ['required','min:2'],
        'description' => ['required','min:5'],
-       'dates' => ['required'],
-       'phone' => ['required','regex:/^\+?[0-9\s\-\(\)]{8,20}$/']
+       'dates' => ['required']
    ],[
        'name.required' => 'Ievadiet vārdu un uzvārdu',
        'name.min' => 'Vārdam jābūt vismaz 3 simboliem',
-       'name.regex' => 'Drīkst izmantot tikai burtus',
+       'name.max' => 'Vārdam jābūt ne vairāk kā 50 simboliem',
+       'name.regex' => 'Tikai burti',
+       'phone.required' => 'Ievadiet telefonu',
+       'phone.regex' => 'Derīgs numurs (8-15 cipari)',
        'destination.required' => 'Ievadiet galamērķi',
+       'destination.min' => 'Vismaz 2 simboli',
        'description.required' => 'Ievadiet aprakstu',
-       'description.min' => 'Aprakstam jābūt vismaz 5 simboliem',
-       'dates.required' => 'Izvēlieties datumus',
-       'phone.required' => 'Ievadiet telefona numuru',
-       'phone.regex' => 'Var izmantot +, ciparus un atstarpes (8-20 simboli)'
+       'description.min' => 'Vismaz 5 simboli',
+       'dates.required' => 'Izvēlieties datumus'
    ]);
    DB::table('requests')->insert([
        'name' => $request->name,
+       'phone' => $request->phone,
        'destination' => $request->destination,
        'description' => $request->description,
        'dates' => $request->dates,
-       'phone' => $request->phone,
        'status' => 'Jauns',
        'created_at' => now(),
        'updated_at' => now()
    ]);
-   return back()->with('success', 'Pieprasījums nosūtīts!');
+   return back()->with('success','Pieprasījums veiksmīgi nosūtīts!');
 }
 public function requestDone($id)
 {

@@ -68,7 +68,7 @@ body {
 </style>
 </head>
 <body>
-<a href="/" class="btn-back">← Atpakaļ</a>
+<a href="/" class="btn-back">Atpakaļ</a>
 <div class="col-lg-4">
 <h3 class="text-white text-center mb-4">
    Individuālais pieprasījums

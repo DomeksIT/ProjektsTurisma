@@ -66,6 +66,11 @@ background:#16a34a;
 margin-top:20px;
 padding:12px;
 }
+.alert {
+   white-space: normal !important;
+   overflow: visible !important;
+   text-overflow: unset !important;
+}
 </style>
 </head>
 <body>
@@ -74,15 +79,15 @@ padding:12px;
 🔐Admin pieslēgšanās
 </div>
 @if(session('error'))
-<div class="alert alert-danger">
-{{ session('error') }}
+<div class="alert alert-danger"  style="white-space: normal; overflow: visible;">
+{{ session('error') }}  
 </div>
 @endif
 <form method="POST" action="/login">
 @csrf
 <div  class="input-group mb-4">
 <span class="input-group-text">👤</span>
-<input type="text" name="username" class="form-control"placeholder="Lietotājvārds" required>
+<input type="text" name="email" class="form-control"placeholder="Lietotājvārds" required>
 </div>
 <div class="input-group  mb-4">
 <span class="input-group-text">🔑</span>

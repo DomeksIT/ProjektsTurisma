@@ -40,7 +40,7 @@ Jauns ceļojums
 <label class="text-white-50">Bilde</label>
 <input type="file" name="image" class="form-control" required>
 </div>
-<button class="btn btn-success w-100">
+<button type="submit" class="btn btn-success w-100">
 Pievienot tūri
 </button>
 </form>
