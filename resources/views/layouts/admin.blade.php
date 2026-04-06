@@ -1,6 +1,16 @@
 <!DOCTYPE html>
 <html lang="lv">
 <head>
+<style>
+.text-truncate-custom {
+max-width: 250px;
+max-height: 60px;
+overflow: hidden;
+display: -webkit-box;
+-webkit-line-clamp: 3; 
+-webkit-box-orient: vertical;
+}
+</style>
 <meta charset="UTF-8">
 <title>Admin panelis</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -46,5 +56,6 @@ Atpakaļ uz mājaslapu
 <div class="container mt-4">
    @yield('content')
 </div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

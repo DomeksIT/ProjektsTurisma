@@ -130,3 +130,11 @@ body{ background: var(--bg); color:var(--text);}
    background: #020617 !important;
    color: #555 !important;
 }
+.text-truncate-custom {
+max-width: 250px;
+max-height: 60px;
+overflow: hidden;
+display: -webkit-box;
+-webkit-line-clamp: 3; 
+-webkit-box-orient: vertical;
+}

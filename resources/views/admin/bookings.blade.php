@@ -79,7 +79,19 @@ Atcelt
 <td>{{ $r->email }}</td>
 <td>{{ $r->destination }}</td>
 <td>{{ $r->dates }}</td>
-<td>{{ $r->description }}</td>
+<td style="max-width: 300px; overflow-wrap: break-word; word-break: break-word;">
+<div class="text-truncate-custom">
+{{ $r->description }}
+</div>
+@if(strlen($r->description) > 100)
+<button class="btn btn-sm btn-outline-info mt-1"
+data-bs-toggle="modal"
+data-bs-target="#modal{{ $r->id }}">
+Skatīt
+</button>
+@endif
+</td>
+</td>
 <td>{{ $r->created_at }}</td>
 <td>
 @if($r->status=='Jauns')
@@ -108,3 +120,23 @@ Atcelt
 </table>
 </div>
 @endsection
+@foreach($requests as $r)
+<div class="modal fade" id="modal{{ $r->id }}" tabindex="-1">
+<div class="modal-dialog modal-dialog-centered">
+<div class="modal-content bg-dark text-white">
+<div class="modal-header">
+<h5 class="modal-title">Apraksts</h5>
+<button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+</div>
+<div class="modal-body" style="word-break: break-word;">
+{{ $r->description }}
+</div>
+<div class="modal-footer">
+<button class="btn btn-secondary" data-bs-dismiss="modal">
+Aizvērt
+</button>
+</div>
+</div>
+</div>
+</div>
+@endforeach

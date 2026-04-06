@@ -8,8 +8,14 @@ Rediģēt tūri
 <div class="card bg-dark p-4 shadow">
 <form method="POST" action="/admin/tours/update/{{ $tour->id }}" enctype="multipart/form-data">
 @csrf
-<input class="form-control mb-3" name="title" value="{{ $tour->title }}" placeholder="Nosaukums">
-<input class="form-control mb-3" type="number" name="price" value="{{ $tour->price }}" placeholder="Cena">
+<input class="form-control mb-3" name="title" value="{{ old('title', $tour->title) }}" placeholder="Nosaukums">
+@error('title')
+<div style="color:red">{{ $message}}</div>
+@enderror
+<input class="form-control mb-3" type="number" name="price" value="{{ old('price', $tour->price) }}" placeholder="Cena">
+@error('price')
+<div style="color:red">{{ $message}}</div>
+@enderror
 <div class="mb-3">
 <label class="text-white-50">Kategorija</label>
 <select name="category_id" class="form-control">
@@ -25,12 +31,21 @@ Rediģēt tūri
 <label class="text-white-50">
 Sākuma datums
 </label>
-<input class="form-control mb-3" type="date" name="start_date" value="{{ $tour->start_date }}">
+<input class="form-control mb-3" type="date" name="start_date" value="{{ old('start_date', $tour->start_date) }}">
+@error('start_date')
+<div style="color:red">{{ $message}}</div>
+@enderror
 <label class="text-white-50">
 Beigu datums
 </label>
-<input class="form-control mb-3" type="date" name="end_date" value="{{ $tour->end_date }}">
-<textarea class="form-control mb-3" name="description" rows="3" placeholder="Apraksts">{{ $tour->description }}</textarea>
+<input class="form-control mb-3" type="date" name="end_date" value="{{old('end_date', $tour->end_date) }}">
+@error('end_date')
+<div style="color:red">{{ $message}}</div>
+@enderror
+<textarea class="form-control mb-3" name="description" rows="3" placeholder="Apraksts">{{ old('description',$tour->description) }}</textarea>
+@error('description')
+<div style="color:red">{{ $message}}</div>
+@enderror
 <label class="text-white-50">
 Mainīt bildi
 </label>

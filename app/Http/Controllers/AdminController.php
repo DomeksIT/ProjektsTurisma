@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
@@ -31,7 +30,6 @@ public function tours()
     ->leftJoin('categories','tours.category_id','=','categories.id')
     ->select('tours.*','categories.name as category')
     ->get();
-
     return view('admin.tours', compact('tours'));
 }
 
@@ -79,6 +77,23 @@ return view('admin.edit-tour', compact('tour','categories'));
 
 public function updateTour(Request $request,$id)
 {
+   $request->validate([
+   'title' => 'required|min:3',
+   'price' => 'required|numeric',
+   'start_date' => 'required',
+   'end_date' => 'required',
+   'description' => 'required',
+   'category_id' => 'required'
+], [
+   'title.required' => 'Nosaukums ir obligāts',
+   'title.min' => 'Nosaukumam jābūt vismaz 3 simboliem',
+   'price.required' => 'Cena ir obligāta',
+   'price.numeric' => 'Cenai jābūt skaitlim',
+   'start_date.required' => 'Sākuma datums ir obligāts',
+   'end_date.required' => 'Beigu datums ir obligāts',
+   'description.required' => 'Apraksts ir obligāts',
+   'category_id.required' => 'Izvēlieties kategoriju'
+]);
 $data = [
 'title'=>$request->title,
 'price'=>$request->price,
@@ -102,7 +117,6 @@ return redirect('/admin/tours');
 public function categories()
 {
     $categories = DB::table('categories')->get();
-
     return view('admin.categories', [
         'categories' => $categories
     ]);
@@ -114,13 +128,11 @@ public function createCategory()
 public function deleteCategory($id)
 {
     DB::table('categories')->where('id',$id)->delete();
-
     return redirect('/admin/categories');
 }
 public function editCategory($id)
 {
     $category = DB::table('categories')->where('id',$id)->first();
-
     return view('admin.edit-category', [
         'category' => $category
     ]);
