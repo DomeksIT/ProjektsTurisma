@@ -1,12 +1,21 @@
 @extends('layouts.admin')
 @section('content')
+<!-- <style>
+    .btn:hover {
+transform: none !important;
+transition: background-color 0.2s !important;
+}
+</style> -->
 <div class="container">
 <h2 class="text-white mb-4">Saņemtie pieteikumi</h2>
 <div class="mb-4">
 <a href="/admin/categories" class="btn btn-outline-light">📂 Kategorijas</a>
 <a href="/admin/tours" class="btn btn-outline-light">📍 Ceļojumi</a>
+<a href="/admin/chats" class="btn btn-outline-light">
+Sarakste ar klientiem
+</a>
 </div>
-<table class="table table-dark table-striped">
+<table class="table table-dark table-hover">
 <thead>
 <tr>
 <th>ID</th>
@@ -38,13 +47,18 @@
 @endif
 </td>
 <td>
+<div class="d-flex gap-1">
 @if($booking->status=='Jauns')
-<a href="/admin/bookings/{{ $booking->id }}/done" class="btn btn-success btn-sm me-2">
+<a href="/admin/bookings/{{ $booking->id }}/done" class="btn btn-success btn-sm">
 Izpildīt
 </a>
 <a href="/admin/bookings/{{ $booking->id }}/cancel" class="btn btn-danger btn-sm">
 Atcelt
 </a>
+<a href="/admin/email/{{ $booking->token }}" class="btn btn-outline-light btn-sm">
+💬 E-pasts
+</a>
+</div>
 @else
 <span class="text-muted">-</span>
 @endif
@@ -104,12 +118,17 @@ Skatīt
 </td>
 <td>
 @if($r->status=='Jauns')
-<a href="/admin/requests/{{ $r->id }}/done" class="btn btn-success btn-sm me-2">
+<div class="d-flex gap-1">
+<a href="/admin/requests/{{ $r->id }}/done" class="btn btn-success btn-sm me-2 py-1">
 Izpildīt
 </a>
-<a href="/admin/requests/{{ $r->id }}/cancel" class="btn btn-danger btn-sm">
+<a href="/admin/requests/{{ $r->id }}/cancel" class="btn btn-danger btn-sm py-1">
 Atcelt
 </a>
+<a href="/admin/email/{{ $r->token }}" class="btn btn-sm btn-outline-light py-1">
+💬 E-pasts
+</a>
+</div>
 @else
 <span class="text-muted">-</span>
 @endif
@@ -139,4 +158,17 @@ Aizvērt
 </div>
 </div>
 </div>
+<script>
 @endforeach
+function updateBookings() {
+   fetch(window.location.href + '?t=' + new Date().getTime())
+       .then(res => res.text())
+       .then(html => {
+           let parser = new DOMParser();
+           let doc = parser.parseFromString(html, 'text/html');
+           let newContent = doc.querySelector('.container').innerHTML;
+           document.querySelector('.container').innerHTML = newContent;
+       });
+}
+setInterval(updateBookings, 3000); 
+</script>

@@ -5,7 +5,6 @@
 <title>{{ $tour->title }}</title>
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
-
 body{
 background:#0b1220;
 color:white;
@@ -52,6 +51,9 @@ font-size:14px;
 margin-top:5px;
 display:block;
 }
+.help-text{
+    color:white;
+}
 </style>
 </head>
 <body>
@@ -81,17 +83,21 @@ Kategorija: {{ $tour->category ?? 'Nav kategorijas' }}
 @endif
 <h2 class="mb-4">Pieteikšanās</h2>
 <div class="card p-4">
-<form method="POST" action="/tours/{{ $tour->id }}/apply">
+<form method="POST" action="/tours/{{ $tour->id }}/apply" onsumbit="disableBtn">
 @csrf
 <div class="mb-3">
 <label>Vārds un uzvārds</label>
 <input
 type="text"
 name="name"
+id="name"
+maxlength="30"
 value="{{ old('name') }}"
 class="form-control @error('name') is-invalid @enderror"
-placeholder="Ievadiet vārdu un uzvārdu">
-<small class="text-white">Tikai burti, vismaz 3 simboli</small>
+placeholder="Ievadiet vārdu un uzvārdu"
+oninput="this.value = this.value.replace(/[^A-Za-zĀ-ž\s]/g, '')"
+required>
+<small class="help-text">Tikai burti, vismaz 3 simboli</small>
 @error('name')
 <div class="invalid-feedback">
 {{ $message }}
@@ -103,6 +109,7 @@ placeholder="Ievadiet vārdu un uzvārdu">
 <input
 type="email"
 name="email"
+id="email"
 value="{{ old('email') }}"
 class="form-control @error('email') is-invalid @enderror"
 placeholder="piemers@email.com">
@@ -117,11 +124,12 @@ placeholder="piemers@email.com">
 <input
 type="text"
 name="phone"
+id="phone"
 value="{{ old('phone') }}"
 class="form-control @error('phone') is-invalid @enderror"
-placeholder="+371 20000000">
-<small class="text-white">
-Var izmantot + un ciparus (8-15 cipari)
+placeholder="+37120000000"
+oninput="this.value = this.value.replace(/[^0-9+]/g, '').slice(0, 15)">
+<small class="help-text">Var izmantot + un ciparus (8-15 cipari)</small>
 </small>
 @error('phone')
 <div class="invalid-feedback">
@@ -129,12 +137,35 @@ Var izmantot + un ciparus (8-15 cipari)
 </div>
 @enderror
 </div>
-<button class="btn btn-success w-100">
+<button id="submitBtn" class="btn btn-success w-100" disabled>
 Pieteikties
 </button>
 </form>
 </div>
 </div>
 </body>
+<script>
+const fields = [
+   document.getElementById('name'),
+   document.getElementById('email'),
+   document.getElementById('phone'),
+];
+const button = document.getElementById('submitBtn');
+function checkFields() {
+   let allFilled = true;
+   fields.forEach(field => {
+       if (!field.value.trim()) {
+           allFilled = false;
+       }
+   });
+   button.disabled = !allFilled;
+}
+fields.forEach(field => {
+   field.addEventListener('input', checkFields);
+});
+checkFields();
+</script>
+
+
 </html>
  

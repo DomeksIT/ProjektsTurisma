@@ -38,7 +38,7 @@ Jauns ceļojums
 </div>
 <div class="mb-4">
 <label class="text-white-50">Bilde</label>
-<input type="file" name="image" class="form-control" required>
+<input type="file" name="image" class="form-control" accept="image/*" required>
 </div>
 <button type="submit" class="btn btn-success w-100">
 Pievienot tūri

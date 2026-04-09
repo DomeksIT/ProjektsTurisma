@@ -35,7 +35,10 @@ body{ background: var(--bg); color:var(--text);}
     border: 1px solid rgba(255,255,255,.14);
     color:#fff;
 }
-
+/* .btn:hover {
+transform: none !important;
+transition: background-color 0.2s !important;
+} */
 .btn-accent{
     background: var(--accent);
     border-color: var(--accent);
@@ -129,12 +132,4 @@ body{ background: var(--bg); color:var(--text);}
 .pagination .page-item.disabled .page-link {
    background: #020617 !important;
    color: #555 !important;
-}
-.text-truncate-custom {
-max-width: 250px;
-max-height: 60px;
-overflow: hidden;
-display: -webkit-box;
--webkit-line-clamp: 3; 
--webkit-box-orient: vertical;
 }

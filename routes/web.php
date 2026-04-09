@@ -24,9 +24,20 @@ Route::get('/admin/categories/edit/{id}', [AdminController::class,'editCategory'
 Route::post('/admin/categories/update/{id}', [AdminController::class,'updateCategory']);
 Route::get('/admin/categories/delete/{id}', [AdminController::class,'deleteCategory']);
 Route::get('/request', function () {
-return view('request');
+   return view('request');
 });
 Route::post('/request', [TourController::class, 'request']);
 Route::get('/admin/requests/{id}/done', [TourController::class, 'requestDone']);
 Route::get('/admin/requests/{id}/cancel', [TourController::class, 'requestCancel']);
+Route::get('/test-email', [AdminController::class, 'testEmail']);
+Route::get('/chat/{token}', [TourController::class, 'clientChat']);
+Route::post('/chat/{token}', [TourController::class, 'clientSend']);
+Route::get('/admin/chats', [AdminController::class, 'chats']);
+//Route::get('/admin/chat/{token}', [AdminController::class, 'chatByToken']);
+//Route::post('/admin/chat/{token}', [AdminController::class, 'sendMessage']);
+Route::get('/admin/livechat/{id}', [AdminController::class, 'liveChat']);
+Route::post('/admin/livechat/{id}', [AdminController::class, 'liveSend']);
+Route::get('/admin/email/{id}', [AdminController::class, 'email']);
+Route::post('/admin/email/{id}', [AdminController::class, 'sendEmail']);
+ 
  

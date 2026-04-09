@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddFieldsToBookingsTable extends Migration
+class AddTokenToBookingsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -14,11 +14,7 @@ class AddFieldsToBookingsTable extends Migration
     public function up()
     {
         Schema::table('bookings', function (Blueprint $table) {
-           $table->string('name');
-           $table->string('email');
-           $table->string('phone')->nullable();
-           $table->string('status')->default('new');
-
+            $table->string('token')->nullable();
         });
     }
 
@@ -30,7 +26,7 @@ class AddFieldsToBookingsTable extends Migration
     public function down()
     {
         Schema::table('bookings', function (Blueprint $table) {
-            $table->dropColumn(['name','email','phone','status']);
+            //
         });
     }
 }

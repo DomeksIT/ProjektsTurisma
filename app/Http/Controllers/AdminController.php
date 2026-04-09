@@ -3,157 +3,413 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Mail;
 class AdminController extends Controller
 {
 
 public function login()
 {
-    return view('admin.login');
+   return view('admin.login');
 }
 
 public function auth(Request $request)
 {
-if (Auth::attempt([
-   'email' => $request->email,
-   'password' => $request->password
-])) {
-   return redirect('/admin/bookings');
-} else {
-   return back()->with('error', 'Nepareizs e-pasts vai parole!');
-}
+   if (Auth::attempt([
+       'email' => $request->email,
+       'password' => $request->password
+   ])) {
+       return redirect('/admin/bookings');
+   } else {
+       return back()->with('error', 'Nepareizs e-pasts vai parole!');
+   }
 }
 
 public function tours()
 {
-    $tours = DB::table('tours')
-    ->leftJoin('categories','tours.category_id','=','categories.id')
-    ->select('tours.*','categories.name as category')
-    ->get();
-    return view('admin.tours', compact('tours'));
+   $tours = DB::table('tours')
+       ->leftJoin('categories','tours.category_id','=','categories.id')
+       ->select('tours.*','categories.name as category')
+       ->get();
+   return view('admin.tours', compact('tours'));
 }
 
 public function createTour()
 {
-    $categories = DB::table('categories')->get();
-    return view('admin.create-tour', compact('categories'));
+   $categories = DB::table('categories')->get();
+   return view('admin.create-tour', compact('categories'));
 }
 
 public function storeTour(Request $request)
 {
-
-$request->validate([
-'title'=>'required',
-'price'=>'required|numeric',
-'start_date'=>'required',
-'end_date'=>'required',
-'description'=>'required',
-'image'=>'required|image'
-]);
-
-$path = $request->file('image')->store('tours','public');
-
-DB::table('tours')->insert([
-'title'=>$request->title,
-'price'=>$request->price,
-'currency'=>'EUR',
-'start_date'=>$request->start_date,
-'end_date'=>$request->end_date,
-'description'=>$request->description,
-'image'=>$path,
-'category_id'=>$request->category_id
-]);
-
-return redirect('/admin/tours');
-
+   $request->validate([
+       'title'=>'required',
+       'price'=>'required|numeric',
+       'start_date'=>'required',
+       'end_date'=>'required',
+       'description'=>'required',
+       'image'=>'required|image'
+   ]);
+   $path = $request->file('image')->store('tours','public');
+   DB::table('tours')->insert([
+       'title'=>$request->title,
+       'price'=>$request->price,
+       'currency'=>'EUR',
+       'start_date'=>$request->start_date,
+       'end_date'=>$request->end_date,
+       'description'=>$request->description,
+       'image'=>$path,
+       'category_id'=>$request->category_id
+   ]);
+   return redirect('/admin/tours');
 }
 
 public function editTour($id)
 {
-$tour = DB::table('tours')->where('id',$id)->first();
-$categories = DB::table('categories')->get();
-return view('admin.edit-tour', compact('tour','categories'));
+   $tour = DB::table('tours')->where('id',$id)->first();
+   $categories = DB::table('categories')->get();
+   return view('admin.edit-tour', compact('tour','categories'));
 }
 
 public function updateTour(Request $request,$id)
 {
    $request->validate([
-   'title' => 'required|min:3',
-   'price' => 'required|numeric',
-   'start_date' => 'required',
-   'end_date' => 'required',
-   'description' => 'required',
-   'category_id' => 'required'
-], [
-   'title.required' => 'Nosaukums ir obligāts',
-   'title.min' => 'Nosaukumam jābūt vismaz 3 simboliem',
-   'price.required' => 'Cena ir obligāta',
-   'price.numeric' => 'Cenai jābūt skaitlim',
-   'start_date.required' => 'Sākuma datums ir obligāts',
-   'end_date.required' => 'Beigu datums ir obligāts',
-   'description.required' => 'Apraksts ir obligāts',
-   'category_id.required' => 'Izvēlieties kategoriju'
-]);
-$data = [
-'title'=>$request->title,
-'price'=>$request->price,
-'start_date'=>$request->start_date,
-'end_date'=>$request->end_date,
-'description'=>$request->description,
-'category_id'=>$request->category_id
-];
-if($request->hasFile('image')){
-$path = $request->file('image')->store('tours','public');
-$data['image']=$path;
-}
-DB::table('tours')->where('id',$id)->update($data);
-return redirect('/admin/tours');
+       'title' => 'required|min:3',
+       'price' => 'required|numeric',
+       'start_date' => 'required',
+       'end_date' => 'required',
+       'description' => 'required',
+       'category_id' => 'required'
+   ]);
+   $data = [
+       'title'=>$request->title,
+       'price'=>$request->price,
+       'start_date'=>$request->start_date,
+       'end_date'=>$request->end_date,
+       'description'=>$request->description,
+       'category_id'=>$request->category_id
+   ];
+   if($request->hasFile('image')){
+       $path = $request->file('image')->store('tours','public');
+       $data['image']=$path;
+   }
+   DB::table('tours')->where('id',$id)->update($data);
+   return redirect('/admin/tours');
 }
 public function deleteTour($id)
 {
-DB::table('tours')->where('id',$id)->delete();
-return redirect('/admin/tours');
+   DB::table('tours')->where('id',$id)->delete();
+   return redirect('/admin/tours');
 }
 public function categories()
 {
-    $categories = DB::table('categories')->get();
-    return view('admin.categories', [
-        'categories' => $categories
-    ]);
+   $categories = DB::table('categories')->get();
+   return view('admin.categories', compact('categories'));
 }
 public function createCategory()
 {
-    return view('admin.create-category');
+   return view('admin.create-category');
 }
 public function deleteCategory($id)
 {
-    DB::table('categories')->where('id',$id)->delete();
-    return redirect('/admin/categories');
+   DB::table('categories')->where('id',$id)->delete();
+   return redirect('/admin/categories');
 }
 public function editCategory($id)
 {
-    $category = DB::table('categories')->where('id',$id)->first();
-    return view('admin.edit-category', [
-        'category' => $category
-    ]);
+   $category = DB::table('categories')->where('id',$id)->first();
+   return view('admin.edit-category', compact('category'));
 }
-Public function updateCategory(Request $request, $id)
+public function updateCategory(Request $request, $id)
 {
-    DB::table('categories')
-        ->where('id',$id)
-        ->update([
-            'name' => $request->name
-        ]);
-    return redirect('/admin/categories');
+   DB::table('categories')
+       ->where('id',$id)
+       ->update([
+           'name' => $request->name
+       ]);
+   return redirect('/admin/categories');
 }
 public function storeCategory(Request $request)
 {
-    $request->validate([
-        'name' => 'required'
-    ]);
-    DB::table('categories')->insert([
-        'name' => $request->name
-    ]);
-    return redirect('/admin/categories');
+   $request->validate([
+       'name' => 'required'
+   ]);
+   DB::table('categories')->insert([
+       'name' => $request->name
+   ]);
+   return redirect('/admin/categories');
 }
+public function chatByToken($value)
+{
+   $request = DB::table('requests')->where('token', $value)->first();
+   if (!$request) {
+       $request = DB::table('requests')->where('id', $value)->first();
+   }
+   if ($request) {
+       $messages = DB::table('messages')
+           ->where('request_id', $request->id)
+            ->whereIn('type',['chat','request','booking'])
+           ->orderBy('created_at')
+           ->get();
+       return view('admin.chat', compact('messages', 'request'));
+   }
+   return "Chat not found";
+}
+ 
+public function sendMessage(Request $req, $token)
+{
+   $requestData = DB::table('requests')->where('token', $token)->first();
+   if (!$requestData) {
+       $requestData = DB::table('bookings')->where('token', $token)->first();
+   }
+   if (!$requestData) {
+       return back();
+   }
+   DB::table('messages')->insert([
+       'request_id' => $requestData->id,
+       'email' => $requestData->email,
+       'message' => $req->message,
+       'sender' => 'admin',
+       'type' => 'chat',        
+       'is_read' => 0,       
+       'created_at' => now(),
+       'updated_at' => now()
+   ]);
+   return back();
+}
+public function chats()
+{
+   $chats = DB::table('requests')
+       ->leftJoin('messages', 'requests.id', '=', 'messages.request_id')
+       ->select(
+           'requests.id',
+           'requests.email',
+           'requests.phone',
+           'requests.destination',
+           'requests.token',
+           DB::raw("'Individuālais' as type"),
+           DB::raw("COUNT(CASE WHEN messages.sender = 'client' AND messages.is_read = 0 THEN 1 END) as unread")
+       )
+       ->groupBy('requests.id', 'requests.email', 'requests.phone', 'requests.destination', 'requests.token')
+       ->union(
+           DB::table('bookings')
+               ->join('tours', 'bookings.tour_id', '=', 'tours.id')
+               ->leftJoin('messages', 'bookings.id', '=', 'messages.request_id')
+               ->select(
+                   'bookings.id',
+                   'bookings.email',
+                   'bookings.phone',
+                   'tours.title as destination',
+                   'bookings.token',
+                   DB::raw("'Saņemtais pieteikums' as type"),
+                   DB::raw("COUNT(CASE WHEN messages.sender = 'client' AND messages.is_read = 0 THEN 1 END) as unread")
+               )
+               ->groupBy('bookings.id', 'bookings.email', 'bookings.phone', 'tours.title', 'bookings.token')
+       )
+       ->get();
+   return view('admin.chats', compact('chats'));
+}
+
+// public function liveChat($id)
+
+// {
+//     $request = DB::table('requests')->where('id', $id)->first();
+//     if ($request) {
+//         DB::table('messages')
+//             ->where('request_id', $id)
+//             ->where('type', 'request') 
+//             ->where('sender', 'client')
+//             ->update(['is_read' => 1]);
+//         $messages = DB::table('messages')
+//             ->where('request_id', $id)
+//             ->where('type', 'request')
+//             ->orderBy('created_at')
+//             ->get();
+//         return view('admin.livechat', [
+//             'messages' => $messages,
+//             'request' => $request
+//         ]);
+//     }
+//     $booking = DB::table('bookings')->where('id', $id)->first();
+//     if ($booking) {
+//         DB::table('messages')
+//             ->where('request_id', $id)
+//             ->where('type', 'booking') 
+//             ->where('sender', 'client')
+//             ->update(['is_read' => 1]);
+//         $messages = DB::table('messages')
+//             ->where('request_id', $id)
+//             ->where('type', 'booking') 
+//             ->orderBy('created_at')
+//             ->get();
+//         return view('admin.livechat', [
+//             'messages' => $messages,
+//             'request' => $booking
+//         ]);
+//     }
+//     abort(404);
+// }
+ public function liveChat($id)
+{
+   $request = DB::table('requests')->where('id', $id)->first();
+   if ($request) {
+       $type = 'request';
+       $data = $request;
+   } else {
+       $booking = DB::table('bookings')->where('id', $id)->first();
+       $type = 'booking';
+       $data = $booking;
+   }
+   DB::table('messages')
+       ->where('request_id', $id)
+       ->where('type', $type)
+       ->where('sender', 'client')
+       ->update(['is_read' => 1]);
+   $messages = DB::table('messages')
+       ->where('request_id', $id)
+       ->where('type', $type)
+       ->orderBy('created_at')
+       ->get();
+   return view('admin.livechat', [
+       'messages' => $messages,
+       'request' => $data
+   ]);
+}
+ 
+// public function liveChat($id)
+// {
+// $request = DB::table('requests')->where('id', $id)->first();
+
+// if ($request) {
+// DB::table('messages')
+// ->where('request_id', $id)
+// ->where('sender', 'client')
+// ->update(['is_read' => 1]);
+// $messages = DB::table('messages')
+// ->where('request_id', $id)
+// ->whereIn('type', ['chat', 'request', 'booking']) 
+// ->orderBy('created_at')
+// ->get();
+// return view('admin.livechat', compact('messages', 'request'));
+// }
+// $booking = DB::table('bookings')->where('id', $id)->first();
+// if ($booking) {
+// DB::table('messages')
+// ->where('request_id', $id)
+// ->where('sender', 'client')
+// ->update(['is_read' => 1]);
+// $messages = DB::table('messages')
+// ->where('request_id', $id)
+// ->where('type', 'booking')
+// ->whereIn('type', ['chat', 'request', 'booking']) 
+// ->orderBy('created_at')
+// ->get();
+// return view('admin.livechat', [
+// 'messages' => $messages,
+// 'request' => $booking
+// ]);
+// }
+// return "Chat not found";
+// }
+ 
+ 
+
+public function email($token)
+{
+   $data = DB::table('requests')->where('token', $token)->first();
+   if (!$data) {
+       $data = DB::table('bookings')->where('token', $token)->first();
+   }
+   if (!$data) {
+       return "Not found";
+   }
+   $messages = DB::table('messages')
+       ->where('request_id', $data->id)
+       ->where('type', 'email') 
+       ->where('sender', 'admin')
+       ->orderBy('created_at')
+       ->get();
+   return view('admin.email', [
+       'data' => $data,
+       'messages' => $messages
+   ]);
+}
+public function sendEmail(Request $req, $token)
+{
+   $data = DB::table('requests')->where('token', $token)->first();
+   if (!$data) {
+       $data = DB::table('bookings')->where('token', $token)->first();
+   }
+   if (!$data) {
+       return back();
+   }
+   Mail::raw($req->message, function ($message) use ($data) {
+       $message->to($data->email)
+           ->subject('Atbilde no administrācijas');
+   });
+
+  DB::table('messages')->insert([
+       'request_id' => $data->id,
+       'email' => $data->email,
+       'message' => $req->message,
+       'sender' => 'admin',
+       'type' => 'email',
+       'created_at' => now(),
+       'updated_at' => now()
+   ]);
+   return back()->with('success', 'Nosūtīts!');
+//    $data = DB::table('requests')->where('token', $token)->first();
+//    if (!$data) {
+//        $data = DB::table('bookings')->where('token', $token)->first();
+//    }
+//    if (!$data) {
+//        return back();
+//    }
+//    Mail::raw($req->message, function ($message) use ($data) {
+//        $message->to($data->email)
+//                ->subject('Atbilde no administrācijas');
+//    });
+//    DB::table('messages')->insert([
+//        'request_id' => $data->id,
+//        'email' => $data->email,
+//        'message' => $req->message,
+//        'sender' => 'admin',
+//        'type' => 'email',
+//        'created_at' => now(),
+//        'updated_at' => now()
+//    ]);
+//    return back()->with('success', 'Nosūtīts!');
+}
+public function liveSend(Request $req, $id)
+{
+   $request = DB::table('requests')->where('id', $id)->first();
+   if ($request) {
+       DB::table('messages')->insert([
+           'request_id' => $id,
+           'email' => $request->email,
+           'message' => $req->message,
+           'sender' => 'admin',
+           'type' => 'request', 
+           'is_read'=> 0,
+           'created_at' => now(),
+           'updated_at' => now()
+       ]);
+       return back();
+   }
+   $booking = DB::table('bookings')->where('id', $id)->first();
+   if ($booking) {
+       DB::table('messages')->insert([
+           'request_id' => $id,
+           'email' => $booking->email,
+           'message' => $req->message,
+           'sender' => 'admin',
+           'type' => 'booking',
+           'created_at' => now(),
+           'updated_at' => now()
+       ]);
+   }
+   return back();
+}
+
+
 }

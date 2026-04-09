@@ -6,6 +6,7 @@
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <style>
+   
 body {
    background: radial-gradient(circle at top, #0f1b35, #0b1220);
    min-height: 100vh;
@@ -73,21 +74,27 @@ body {
 <h3 class="text-white text-center mb-4">
    Individuālais pieprasījums
 </h3>
-<div class="glass-card p-4">
-@if(session('success'))
+@if(session('ok'))
 <div class="alert alert-success">
-   {{ session('success') }}
+   {{ session('ok') }}
 </div>
 @endif
-<form method="POST" action="/request">
+<div class="glass-card p-4">
+<form method="POST" action="/request" onsubmit="handleSubmit(this)">
 @csrf
 <div class="mb-3">
 <label class="text-white">Vārds un uzvārds</label>
 <input type="text"
 class="form-control @error('name') is-invalid @enderror"
 name="name"
+id="name"
+maxlength="30"
 value="{{ old('name') }}"
-placeholder="Ievadiet vārdu un uzvārdu">
+placeholder="Ievadiet vārdu un uzvārdu"
+oninput="this.value = this.value.replace(/[^A-Za-zĀ-ž\s]/g, '')"
+required
+>
+
 <div class="form-text">
    Tikai burti, vismaz 3 simboli
 </div>
@@ -100,23 +107,27 @@ placeholder="Ievadiet vārdu un uzvārdu">
 <div class="mb-3">
 <label class="text-white">Telefons</label>
 <input type="text"
+id="phone"
 class="form-control @error('phone') is-invalid @enderror"
 name="phone"
 value="{{ old('phone') }}"
-placeholder="+371 20000000">
+placeholder="+371 20000000"
+oninput="this.value = this.value.replace(/[^0-9+]/g, '').slice(0, 15)">
 <div class="form-text">
-   Var izmantot +, ciparus (8–15 simboli)
+   Var izmantot +, ciparus (8-15 simboli)
 </div>
 @error('phone')
 <div class="invalid-feedback d-block">
    {{ $message }}
 </div>
 @enderror
+
 <div class="mb-3">
 <label class="text-white">E-pasts</label>
 <input
 type="email"
 name="email"
+id="email"
 value="{{ old('email') }}"
 class="form-control @error('email') is-invalid @enderror"
 placeholder="piemers@email.com">
@@ -132,6 +143,7 @@ placeholder="piemers@email.com">
 <input type="text"
 class="form-control @error('destination') is-invalid @enderror"
 name="destination"
+id="destination"
 value="{{ old('destination') }}"
 placeholder="Kur vēlaties doties?">
 @error('destination')
@@ -141,11 +153,12 @@ placeholder="Kur vēlaties doties?">
 @enderror
 </div>
 <div class="mb-3">
-<label class="text-white">Datumi (no – līdz)</label>
+<label class="text-white">Datumi (no - līdz)</label>
 <div class="input-group">
 <input id="dates"
 class="form-control @error('dates') is-invalid @enderror"
 name="dates"
+id="dates"
 value="{{ old('dates') }}"
 placeholder="Izvēlieties datumus">
 <span class="input-group-text" id="calendar-btn">📅</span>
@@ -161,14 +174,17 @@ placeholder="Izvēlieties datumus">
 <textarea
 class="form-control @error('description') is-invalid @enderror"
 name="description"
-placeholder="Papildus informācija...">{{ old('description') }}</textarea>
+id="description"
+maxlength="400"
+placeholder="Papildus informācija...">{{ old('description') }}
+</textarea>
 @error('description')
 <div class="invalid-feedback d-block">
    {{ $message }}
 </div>
 @enderror
 </div>
-<button class="btn btn-accent w-100">
+<button id="submitBtn" class="btn btn-accent w-100" disabled>
    Nosūtīt pieprasījumu
 </button>
 </form>
@@ -180,11 +196,67 @@ placeholder="Papildus informācija...">{{ old('description') }}</textarea>
 const picker = flatpickr("#dates", {
    mode: "range",
    dateFormat: "Y-m-d",
-   locale: "lv"
+   locale: "lv",
+   onChange: function() {
+       checkFields();
+   }
 });
 document.getElementById("calendar-btn").addEventListener("click", function () {
    picker.open();
 });
+const fields = [
+   document.getElementById('name'),
+   document.getElementById('phone'),
+   document.getElementById('email'),
+   document.getElementById('destination'),
+   document.getElementById('dates'),
+   document.getElementById('description')
+];
+const button = document.getElementById('submitBtn');
+function checkFields() {
+   let allFilled = true;
+   fields.forEach(field => {
+       if (!field.value.trim()) {
+           allFilled = false;
+       }
+   });
+   button.disabled = !allFilled;
+}
+fields.forEach(field => {
+   field.addEventListener('input', checkFields);
+});
+checkFields();
+</script>
+<!-- <script>
+const fields = [
+   document.getElementById('name'),
+   document.getElementById('phone'),
+   document.getElementById('email'),
+   document.getElementById('destination'),
+   document.getElementById('dates'),
+   document.getElementById('description')
+];
+const button = document.getElementById('submitBtn');
+function checkFields() {
+   let allFilled = true;
+   fields.forEach(field => {
+       if (!field.value.trim()) {
+           allFilled = false;
+       }
+   });
+   button.disabled = !allFilled;
+}
+fields.forEach(field => {
+   field.addEventListener('input', checkFields);
+}); -->
+<!-- <script>
+function handleSubmit(form) {
+   const btn = document.getElementById('submitBtn');
+   if (btn.disabled) return false;
+   btn.disabled = true;
+   return true;
+} -->
+</script>
 </script>
 </body>
 </html>
