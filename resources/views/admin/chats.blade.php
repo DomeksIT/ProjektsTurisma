@@ -1,6 +1,12 @@
 @extends('layouts.admin')
 @section('content')
 <div class="mb-3">
+<a href="/admin/chats" class="btn btn-outline-light me-2">
+Visi
+</a>
+<a href="/admin/chats?unread=1" class="btn btn-warning">
+Neizlasītie
+</a>
 <a href="/admin/bookings" class="btn btn-outline-light">
        Atpakaļ uz sarakstu
 </a>

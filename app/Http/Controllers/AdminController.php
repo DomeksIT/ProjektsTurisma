@@ -49,7 +49,17 @@ public function storeTour(Request $request)
        'end_date'=>'required',
        'description'=>'required',
        'image'=>'required|image'
-   ]);
+   ],
+   [
+   'title.required' => 'Nosaukums ir obligāts',
+   'price.required' => 'Cena ir obligāta',
+   'price.numeric' => 'Cena jābūt skaitlim',
+   'start_date.required' => 'Sākuma datums ir obligāts',
+   'end_date.required' => 'Beigu datums ir obligāts',
+   'description.required' => 'Apraksts ir obligāts',
+   'image.required' => 'Attēls ir obligāts',
+   'image.image' => 'Fails jābūt attēlam'
+]);
    $path = $request->file('image')->store('tours','public');
    DB::table('tours')->insert([
        'title'=>$request->title,
@@ -80,7 +90,17 @@ public function updateTour(Request $request,$id)
        'end_date' => 'required',
        'description' => 'required',
        'category_id' => 'required'
-   ]);
+   ],
+   [
+   'title.required' => 'Nosaukums ir obligāts',
+   'price.required' => 'Cena ir obligāta',
+   'price.numeric' => 'Cena jābūt skaitlim',
+   'start_date.required' => 'Sākuma datums ir obligāts',
+   'end_date.required' => 'Beigu datums ir obligāts',
+   'description.required' => 'Apraksts ir obligāts',
+   'image.required' => 'Attēls ir obligāts',
+   'image.image' => 'Fails jābūt attēlam'
+]);
    $data = [
        'title'=>$request->title,
        'price'=>$request->price,
@@ -179,36 +199,97 @@ public function sendMessage(Request $req, $token)
 }
 public function chats()
 {
-   $chats = DB::table('requests')
-       ->leftJoin('messages', 'requests.id', '=', 'messages.request_id')
-       ->select(
-           'requests.id',
-           'requests.email',
-           'requests.phone',
-           'requests.destination',
-           'requests.token',
-           DB::raw("'Individuālais' as type"),
-           DB::raw("COUNT(CASE WHEN messages.sender = 'client' AND messages.is_read = 0 THEN 1 END) as unread")
-       )
-       ->groupBy('requests.id', 'requests.email', 'requests.phone', 'requests.destination', 'requests.token')
-       ->union(
-           DB::table('bookings')
-               ->join('tours', 'bookings.tour_id', '=', 'tours.id')
-               ->leftJoin('messages', 'bookings.id', '=', 'messages.request_id')
-               ->select(
-                   'bookings.id',
-                   'bookings.email',
-                   'bookings.phone',
-                   'tours.title as destination',
-                   'bookings.token',
-                   DB::raw("'Saņemtais pieteikums' as type"),
-                   DB::raw("COUNT(CASE WHEN messages.sender = 'client' AND messages.is_read = 0 THEN 1 END) as unread")
-               )
-               ->groupBy('bookings.id', 'bookings.email', 'bookings.phone', 'tours.title', 'bookings.token')
-       )
-       ->get();
-   return view('admin.chats', compact('chats'));
+$onlyUnread = request('unread');
+$requests = DB::table('requests')
+->leftJoin('messages', 'requests.id', '=', 'messages.request_id')
+->select(
+'requests.id',
+'requests.email',
+'requests.phone',
+'requests.destination',
+'requests.token',
+DB::raw("'Individuālais' as type"),
+DB::raw("COUNT(CASE
+WHEN messages.sender = 'client'
+AND messages.is_read = 0
+THEN 1 END) as unread")
+)
+->groupBy(
+'requests.id',
+'requests.email',
+'requests.phone',
+'requests.destination',
+'requests.token'
+);
+
+$bookings = DB::table('bookings')
+->join('tours', 'bookings.tour_id', '=', 'tours.id')
+->leftJoin('messages', 'bookings.id', '=', 'messages.request_id')
+->select(
+'bookings.id',
+'bookings.email',
+'bookings.phone',
+'tours.title as destination',
+'bookings.token',
+DB::raw("'Rezervācija' as type"),
+DB::raw("COUNT(CASE
+WHEN messages.sender = 'client'
+AND messages.is_read = 0
+THEN 1 END) as unread")
+)
+->groupBy(
+'bookings.id',
+'bookings.email',
+'bookings.phone',
+'tours.title',
+'bookings.token'
+);
+$chats = $requests->unionAll($bookings);
+$chats = DB::table(DB::raw("({$chats->toSql()}) as combined"))
+->mergeBindings($chats)
+->when($onlyUnread, function ($q) {
+$q->where('unread', '>', 0)
+->orderByRaw('unread DESC');
+})
+->when($onlyUnread, function ($q) {
+ $q->orderBy('id', 'desc');  
+})
+->get();
+
+return view('admin.chats', compact('chats'));
 }
+// public function chats()
+// {
+//    $chats = DB::table('requests')
+//        ->leftJoin('messages', 'requests.id', '=', 'messages.request_id')
+//        ->select(
+//            'requests.id',
+//            'requests.email',
+//            'requests.phone',
+//            'requests.destination',
+//            'requests.token',
+//            DB::raw("'Individuālais' as type"),
+//            DB::raw("COUNT(CASE WHEN messages.sender = 'client' AND messages.is_read = 0 THEN 1 END) as unread")
+//        )
+//        ->groupBy('requests.id', 'requests.email', 'requests.phone', 'requests.destination', 'requests.token')
+//        ->union(
+//            DB::table('bookings')
+//                ->join('tours', 'bookings.tour_id', '=', 'tours.id')
+//                ->leftJoin('messages', 'bookings.id', '=', 'messages.request_id')
+//                ->select(
+//                    'bookings.id',
+//                    'bookings.email',
+//                    'bookings.phone',
+//                    'tours.title as destination',
+//                    'bookings.token',
+//                    DB::raw("'Saņemtais pieteikums' as type"),
+//                    DB::raw("COUNT(CASE WHEN messages.sender = 'client' AND messages.is_read = 0 THEN 1 END) as unread")
+//                )
+//                ->groupBy('bookings.id', 'bookings.email', 'bookings.phone', 'tours.title', 'bookings.token')
+//        )
+//        ->get();
+//    return view('admin.chats', compact('chats'));
+// }
 
 // public function liveChat($id)
 
@@ -411,5 +492,19 @@ public function liveSend(Request $req, $id)
    return back();
 }
 
-
+public function bookings()
+{
+$bookings = DB::table('bookings')
+->join('tours', 'bookings.tour_id', '=', 'tours.id')
+->select('bookings.*', 'tours.title as tour_title')
+->orderBy('bookings.created_at', 'desc')
+->get();
+$requests = DB::table('requests')
+->orderBy('created_at', 'desc')
+->get();
+return view('admin.bookings', [
+'bookings' => $bookings,
+'requests' => $requests
+]);
+}
 }
