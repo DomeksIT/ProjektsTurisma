@@ -158,8 +158,8 @@ Aizvērt
 </div>
 </div>
 </div>
-<script>
 @endforeach
+<script>
 function updateBookings() {
    fetch(window.location.href + '?t=' + new Date().getTime())
        .then(res => res.text())

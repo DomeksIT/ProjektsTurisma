@@ -14,7 +14,7 @@ Ceļojumu nav
 <div class="row g-4">
 @foreach ($tours as $tour)
 @php
-$img = asset('storage/'.$tour->image);
+$img = asset('storage/tours/thumbs/' . basename($tour->image));
 @endphp
 <div class="col-md-6 col-lg-4">
 <div class="card-tour h-100">

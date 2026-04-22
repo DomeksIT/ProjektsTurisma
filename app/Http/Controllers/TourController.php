@@ -174,21 +174,21 @@ $link",
 }
  
  
-public function bookings()
-{
-$bookings = DB::table('bookings')
-->join('tours', 'bookings.tour_id', '=', 'tours.id')
-->select('bookings.*', 'tours.title as tour_title')
-->orderBy('bookings.created_at', 'desc')
-->get();
-$requests = DB::table('requests')
-->orderBy('created_at', 'desc')
-->get();
-return view('admin.bookings', [
-'bookings' => $bookings,
-'requests' => $requests
-]);
-}
+// public function bookings()
+// {
+// $bookings = DB::table('bookings')
+// ->join('tours', 'bookings.tour_id', '=', 'tours.id')
+// ->select('bookings.*', 'tours.title as tour_title')
+// ->orderBy('bookings.created_at', 'desc')
+// ->get();
+// $requests = DB::table('requests')
+// ->orderBy('created_at', 'desc')
+// ->get();
+// return view('admin.bookings', [
+// 'bookings' => $bookings,
+// 'requests' => $requests
+// ]);
+// }
 public function done($id)
 {
 DB::table('bookings')
@@ -414,7 +414,6 @@ public function clientChat($token)
 // }
 public function clientSend(Request $req, $token)
 {
-   // request
    $request = DB::table('requests')->where('token', $token)->first();
    if ($request) {
        DB::table('messages')->insert([
@@ -428,7 +427,6 @@ public function clientSend(Request $req, $token)
        ]);
        return back();
    }
-   // booking
    $booking = DB::table('bookings')->where('token', $token)->first();
    if ($booking) {
        DB::table('messages')->insert([

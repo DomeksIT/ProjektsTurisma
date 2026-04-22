@@ -3,6 +3,10 @@ namespace App\Http\Controllers;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Http\Request;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\Encoders\JpegEncoder;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 class AdminController extends Controller
@@ -47,7 +51,7 @@ public function storeTour(Request $request)
        'price'=>'required|numeric',
        'start_date'=>'required',
        'end_date'=>'required',
-       'description'=>'required',
+       'description'=>'required|max:100',
        'image'=>'required|image'
    ],
    [
@@ -60,7 +64,20 @@ public function storeTour(Request $request)
    'image.required' => 'Attēls ir obligāts',
    'image.image' => 'Fails jābūt attēlam'
 ]);
-   $path = $request->file('image')->store('tours','public');
+$path = null;
+if ($request->hasFile('image')) {
+$image = $request->file('image');
+$filename = time() . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
+$path = $image->storeAs('tours', $filename, 'public');
+$thumbPath = 'tours/thumbs/' . $filename;
+$manager = new ImageManager(new Driver());
+$img = $manager->read($image->getRealPath());
+$img = $img->scale(width: 800);
+Storage::disk('public')->put(
+$thumbPath,
+(string) $img->encode(new JpegEncoder(quality: 90))
+);
+}
    DB::table('tours')->insert([
        'title'=>$request->title,
        'price'=>$request->price,
@@ -88,7 +105,7 @@ public function updateTour(Request $request,$id)
        'price' => 'required|numeric',
        'start_date' => 'required',
        'end_date' => 'required',
-       'description' => 'required',
+       'description' => 'required|max:100',
        'category_id' => 'required'
    ],
    [
@@ -109,10 +126,20 @@ public function updateTour(Request $request,$id)
        'description'=>$request->description,
        'category_id'=>$request->category_id
    ];
-   if($request->hasFile('image')){
-       $path = $request->file('image')->store('tours','public');
-       $data['image']=$path;
-   }
+if ($request->hasFile('image')) {
+$image = $request->file('image');
+$filename = time() . '_' . Str::random(5) . '.' . $image->getClientOriginalExtension();
+$path = $image->storeAs('tours', $filename, 'public');
+$thumbPath = 'tours/thumbs/' . $filename;
+$manager = new ImageManager(new Driver());
+$img = $manager->read($image->getRealPath());
+$img = $img->scale(width: 800);
+Storage::disk('public')->put(
+$thumbPath,
+(string) $img->encode(new JpegEncoder(quality: 90))
+);
+$data['image'] = $path;
+}
    DB::table('tours')->where('id',$id)->update($data);
    return redirect('/admin/tours');
 }
