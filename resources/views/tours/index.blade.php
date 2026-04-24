@@ -6,6 +6,48 @@
 <div class="text-white-50">Izvēlies savu nākamo galamērķi</div>
 </div>
 </div>
+<div class="card bg-dark border-0 p-3 mb-4">
+    <div class="mb-3">
+<div class="text-white fw-semibold">
+🔎 Meklē un filtrē ceļojumus
+</div>
+<div class="text-white-50 small">
+Izmanto meklēšanu vai filtrus, lai ātri atrastu sev piemērotu ceļojumu
+</div>
+</div>
+<form method="GET" id="filterForm">
+<div class="row g-2 align-items-end">
+<div class="col-md-3">
+<input type="text" name="search" class="form-control form-dark" placeholder="🔍 Meklēt..." value="{{ request('search') }}">
+</div>
+<div class="col-md-2">
+<input type="number" name="price_min" class="form-control form-dark" placeholder="No €" value="{{ request('price_min') }}">
+</div>
+<div class="col-md-2">
+<input type="number" name="price_max" class="form-control form-dark" placeholder="Līdz €" value="{{ request('price_max') }}">
+</div>
+<div class="col-md-3">
+<select name="category_id" class="form-control form-dark">
+<option value="">📂 Visas kategorijas</option>
+@foreach($categories as $cat)
+<option value="{{ $cat->id }}"
+{{ request('category_id') == $cat->id ? 'selected' : '' }}>
+{{ $cat->name }}
+</option>
+@endforeach
+</select>
+</div>
+<div class="col-md-2 d-flex gap-2">
+<button class="btn btn-success w-100">
+🔍
+</button>
+<a href="/tours" class="btn btn-danger w-100">
+✖
+</a>
+</div>
+</div>
+</form>
+</div>
 @if($tours->count()==0)
 <div class="alert alert-warning">
 Ceļojumu nav
@@ -50,4 +92,34 @@ Skatīt tūri
 <div class="mt-5 d-flex justify-content-center">
 {{ $tours->links() }}
 </div>
+<script>
+let timeout = null;
+const mainInput = document.getElementById('search_main');
+mainInput.addEventListener('input', function () {
+   clearTimeout(timeout);
+   timeout = setTimeout(() => {
+       let params = new URLSearchParams(window.location.search);
+       if (mainInput.value) {
+           params.set('search_main', mainInput.value);
+       } else {
+           params.delete('search_main');
+       }
+       window.location.href = window.location.pathname + '?' + params.toString();
+   }, 400);
+});
+const customInput = document.getElementById('search_custom');
+customInput.addEventListener('input', function () {
+   clearTimeout(timeout);
+   timeout = setTimeout(() => {
+       let params = new URLSearchParams(window.location.search);
+       if (customInput.value) {
+           params.set('search_custom', customInput.value);
+       } else {
+           params.delete('search_custom');
+       }
+       window.location.href = window.location.pathname + '?' + params.toString();
+   }, 400);
+});
+</script>
+ 
 @endsection

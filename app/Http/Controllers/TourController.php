@@ -6,16 +6,29 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 class TourController extends Controller
 {
-public function index()
+public function index(Request $request)
 {
-$tours = DB::table('tours')
-->leftJoin('categories','tours.category_id','=','categories.id')
-->select('tours.*','categories.name as category')
-->paginate(10);
-return view('tours.index',[
-'tours' => $tours
+$query = DB::table('tours')
+->leftJoin('categories', 'tours.category_id', '=', 'categories.id')
+->select('tours.*', 'categories.name as category');
+if ($request->search) {
+$query->where('tours.title', 'like', '%' . $request->search . '%');
+}
+if ($request->price_min) {
+$query->where('tours.price', '>=', $request->price_min);
+}
+if ($request->price_max) {
+$query->where('tours.price', '<=', $request->price_max);
+}
+if ($request->category_id) {
+$query->where('tours.category_id', $request->category_id);
+}
+$tours = $query->paginate(10)->withQueryString();
+$categories = DB::table('categories')->get();
+return view('tours.index', [
+'tours' => $tours,
+'categories' => $categories
 ]);
-
 }
 public function show($id)
 {

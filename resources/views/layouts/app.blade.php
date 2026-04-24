@@ -41,7 +41,7 @@ Kontakti
 </a>
 </li>
 <li class="nav-item">
-<a class="nav-link" href="/login">
+<a class="nav-link" href="/admin/login">
 🔐 Admin
 </a>
 </li>
@@ -53,9 +53,11 @@ Kontakti
 <div class="container py-5 position-relative">
 <div class="row align-items-center g-4">
 <div class="col-lg-7">
-<span class="badge badge-soft mb-3">
-Droši | Ātri | Ērti
-</span>
+<div class="hero-tags mb-3">
+<span>🔒 Droši</span>
+<span>⚡ Ātri</span>
+<span>👌 Ērti</span>
+</div>
 <h1 class="display-5 fw-bold text-white mb-3">
 Ceļojumi, kas izskatās kā sapnis
 </h1>

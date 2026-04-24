@@ -11,7 +11,16 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Mail;
 class AdminController extends Controller
 {
-
+public function deleteBooking($id)
+{
+   DB::table('bookings')->where('id', $id)->delete();
+   return redirect()->back();
+}
+public function deleteRequest($id)
+{
+   DB::table('requests')->where('id', $id)->delete();
+   return redirect()->back();
+}
 public function login()
 {
    return view('admin.login');
@@ -19,14 +28,19 @@ public function login()
 
 public function auth(Request $request)
 {
-   if (Auth::attempt([
-       'email' => $request->email,
-       'password' => $request->password
-   ])) {
+   $credentials = [
+       'email' => (string)$request->email,
+       'password' => (string)$request->password,
+   ];
+   if (Auth::attempt($credentials)) {
+       $user = Auth::user();
+       if (!$user || !$user->is_admin) {
+           Auth::logout();
+           return back()->with('error', 'Nav admin!');
+       }
        return redirect('/admin/bookings');
-   } else {
-       return back()->with('error', 'Nepareizs e-pasts vai parole!');
    }
+   return back()->with('error', 'Nepareizs e-pasts vai parole!');
 }
 
 public function tours()
@@ -47,11 +61,11 @@ public function createTour()
 public function storeTour(Request $request)
 {
    $request->validate([
-       'title'=>'required',
+       'title'=>'required|max:50',
        'price'=>'required|numeric',
        'start_date'=>'required',
        'end_date'=>'required',
-       'description'=>'required|max:100',
+       'description'=>'required|max:50',
        'image'=>'required|image'
    ],
    [
@@ -420,7 +434,6 @@ return view('admin.chats', compact('chats'));
 // return "Chat not found";
 // }
  
- 
 
 public function email($token)
 {
@@ -521,17 +534,38 @@ public function liveSend(Request $req, $id)
 
 public function bookings()
 {
-$bookings = DB::table('bookings')
-->join('tours', 'bookings.tour_id', '=', 'tours.id')
-->select('bookings.*', 'tours.title as tour_title')
-->orderBy('bookings.created_at', 'desc')
-->get();
-$requests = DB::table('requests')
-->orderBy('created_at', 'desc')
-->get();
-return view('admin.bookings', [
-'bookings' => $bookings,
-'requests' => $requests
-]);
+   $search = request('search_main');
+   $bookings = DB::table('bookings')
+       ->join('tours', 'bookings.tour_id', '=', 'tours.id')
+       ->select('bookings.*', 'tours.title as tour_title')
+       ->orderBy('bookings.created_at', 'desc');
+   if ($search) {
+       $bookings->where(function ($q) use ($search) {
+           $q->where('bookings.name', 'like', "%$search%")
+             ->orWhere('bookings.email', 'like', "%$search%")
+             ->orWhere('bookings.phone', 'like', "%$search%")
+             ->orWhere('tours.title', 'like', "%$search%");
+       });
+   }
+   $bookings = $bookings->get();
+   $search2 = request('search_custom');
+   $requests = DB::table('requests')
+       ->orderBy('created_at', 'desc');
+   if ($search2) {
+       $requests->where(function ($q) use ($search2) {
+           $q->where('name', 'like', "%$search2%")
+             ->orWhere('email', 'like', "%$search2%")
+             ->orWhere('phone', 'like', "%$search2%")
+             ->orWhere('destination', 'like', "%$search2%")
+             ->orWhere('description', 'like', "%$search2%");
+       });
+   }
+   $requests = $requests->get();
+   return view('admin.bookings', [
+       'bookings' => $bookings,
+       'requests' => $requests
+   ]);
+
+
 }
 }

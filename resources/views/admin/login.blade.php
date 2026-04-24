@@ -83,7 +83,7 @@ padding:12px;
 {{ session('error') }}  
 </div>
 @endif
-<form method="POST" action="/login">
+<form method="POST" action="/admin/login">
 @csrf
 <div  class="input-group mb-4">
 <span class="input-group-text">👤</span>

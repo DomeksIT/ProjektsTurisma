@@ -1,14 +1,35 @@
 @extends('layouts.admin')
 @section('content')
+<style>
+.form-dark input,
+.form-dark textarea,
+.form-dark select {
+   background: #1e1e2f !important;
+   border: 1px solid #333 !important;
+   color: #fff !important;
+}
+.form-dark input::placeholder,
+.form-dark textarea::placeholder {
+   color: #aaa;
+}
+.form-dark input:focus,
+.form-dark textarea:focus,
+.form-dark select:focus {
+   background: #1e1e2f !important;
+   color: #fff !important;
+   border-color: #28a745 !important;
+   box-shadow: none !important;
+}
+</style>
 <div class="d-flex justify-content-center align-items-center" style="min-height:70vh;">
 <div style="width:420px">
 <h3 class="text-center text-white mb-4">
 Rediģēt tūri
 </h3>
-<div class="card bg-dark p-4 shadow">
+<div class="card bg-dark p-4 form-dark">
 <form method="POST" action="/admin/tours/update/{{ $tour->id }}" enctype="multipart/form-data">
 @csrf
-<input class="form-control mb-3" name="title" value="{{ old('title', $tour->title) }}" placeholder="Nosaukums">
+<input class="form-control mb-3" name="title" value="{{ old('title', $tour->title) }}" placeholder="Nosaukums" maxlength="50">
 @error('title')
 <div style="color:red">{{ $message}}</div>
 @enderror
@@ -42,7 +63,7 @@ Beigu datums
 @error('end_date')
 <div style="color:red">{{ $message}}</div>
 @enderror
-<textarea class="form-control mb-3" name="description" rows="3" placeholder="Apraksts">{{ old('description',$tour->description) }}</textarea>
+<textarea class="form-control mb-3" name="description" rows="3" placeholder="Apraksts" maxlength="50">{{ old('description',$tour->description) }}</textarea>
 @error('description')
 <div style="color:red">{{ $message}}</div>
 @enderror
