@@ -240,65 +240,68 @@ public function sendMessage(Request $req, $token)
 }
 public function chats()
 {
-$onlyUnread = request('unread');
-$requests = DB::table('requests')
-->leftJoin('messages', 'requests.id', '=', 'messages.request_id')
-->select(
-'requests.id',
-'requests.email',
-'requests.phone',
-'requests.destination',
-'requests.token',
-DB::raw("'Individuālais' as type"),
-DB::raw("COUNT(CASE
-WHEN messages.sender = 'client'
-AND messages.is_read = 0
-THEN 1 END) as unread")
-)
-->groupBy(
-'requests.id',
-'requests.email',
-'requests.phone',
-'requests.destination',
-'requests.token'
-);
-
-$bookings = DB::table('bookings')
-->join('tours', 'bookings.tour_id', '=', 'tours.id')
-->leftJoin('messages', 'bookings.id', '=', 'messages.request_id')
-->select(
-'bookings.id',
-'bookings.email',
-'bookings.phone',
-'tours.title as destination',
-'bookings.token',
-DB::raw("'Rezervācija' as type"),
-DB::raw("COUNT(CASE
-WHEN messages.sender = 'client'
-AND messages.is_read = 0
-THEN 1 END) as unread")
-)
-->groupBy(
-'bookings.id',
-'bookings.email',
-'bookings.phone',
-'tours.title',
-'bookings.token'
-);
-$chats = $requests->unionAll($bookings);
-$chats = DB::table(DB::raw("({$chats->toSql()}) as combined"))
-->mergeBindings($chats)
-->when($onlyUnread, function ($q) {
-$q->where('unread', '>', 0)
-->orderByRaw('unread DESC');
-})
-->when($onlyUnread, function ($q) {
- $q->orderBy('id', 'desc');  
-})
-->get();
-
-return view('admin.chats', compact('chats'));
+    $onlyUnread = request('unread');
+    $requests = DB::table('requests')
+        ->leftJoin('messages', function ($join) {
+            $join->on('requests.id', '=', 'messages.request_id')
+                 ->where('messages.type', 'request'); 
+        })
+        ->select(
+            'requests.id',
+            'requests.email',
+            'requests.phone',
+            'requests.destination',
+            'requests.token',
+            DB::raw("'Individuālais' as type"),
+            DB::raw("COUNT(CASE
+                WHEN messages.sender = 'client'
+                AND messages.is_read = 0
+                THEN 1 END) as unread")
+        )
+        ->groupBy(
+            'requests.id',
+            'requests.email',
+            'requests.phone',
+            'requests.destination',
+            'requests.token'
+        );
+    $bookings = DB::table('bookings')
+        ->join('tours', 'bookings.tour_id', '=', 'tours.id')
+        ->leftJoin('messages', function ($join) {
+            $join->on('bookings.id', '=', 'messages.request_id')
+                 ->where('messages.type', 'booking'); 
+        })
+        ->select(
+            'bookings.id',
+            'bookings.email',
+            'bookings.phone',
+            'tours.title as destination',
+            'bookings.token',
+            DB::raw("'Rezervācija' as type"),
+            DB::raw("COUNT(CASE
+                WHEN messages.sender = 'client'
+                AND messages.is_read = 0
+                THEN 1 END) as unread")
+        )
+        ->groupBy(
+            'bookings.id',
+            'bookings.email',
+            'bookings.phone',
+            'tours.title',
+            'bookings.token'
+        );
+    $chats = $requests->unionAll($bookings);
+    $chats = DB::table(DB::raw("({$chats->toSql()}) as combined"))
+        ->mergeBindings($chats)
+        ->when($onlyUnread, function ($q) {
+            $q->where('unread', '>', 0)
+              ->orderByRaw('unread DESC');
+        })
+        ->orderBy('id', 'desc') 
+        ->get();
+    return view('admin.chats', compact('chats'));
 }
+ 
 // public function chats()
 // {
 //    $chats = DB::table('requests')
@@ -371,16 +374,12 @@ return view('admin.chats', compact('chats'));
 //     }
 //     abort(404);
 // }
- public function liveChat($id)
+public function liveChat($type, $id)
 {
-   $request = DB::table('requests')->where('id', $id)->first();
-   if ($request) {
-       $type = 'request';
-       $data = $request;
+   if ($type == 'request') {
+       $data = DB::table('requests')->where('id', $id)->first();
    } else {
-       $booking = DB::table('bookings')->where('id', $id)->first();
-       $type = 'booking';
-       $data = $booking;
+       $data = DB::table('bookings')->where('id', $id)->first();
    }
    DB::table('messages')
        ->where('request_id', $id)
@@ -394,7 +393,8 @@ return view('admin.chats', compact('chats'));
        ->get();
    return view('admin.livechat', [
        'messages' => $messages,
-       'request' => $data
+       'request' => $data,
+       'type' => $type
    ]);
 }
  
@@ -444,9 +444,10 @@ public function email($token)
    if (!$data) {
        return "Not found";
    }
+   $type = isset($data->tour_id) ? 'booking_email' : 'request_email';
    $messages = DB::table('messages')
        ->where('request_id', $data->id)
-       ->where('type', 'email') 
+       ->where('type', $type)
        ->where('sender', 'admin')
        ->orderBy('created_at')
        ->get();
@@ -455,30 +456,36 @@ public function email($token)
        'messages' => $messages
    ]);
 }
+
 public function sendEmail(Request $req, $token)
 {
-   $data = DB::table('requests')->where('token', $token)->first();
-   if (!$data) {
-       $data = DB::table('bookings')->where('token', $token)->first();
-   }
-   if (!$data) {
-       return back();
-   }
-   Mail::raw($req->message, function ($message) use ($data) {
-       $message->to($data->email)
-           ->subject('Atbilde no administrācijas');
-   });
+$data = DB::table('requests')->where('token', $token)->first();
+if (!$data) {
+$data = DB::table('bookings')->where('token', $token)->first();
+}
+if (!$data) {
+return back();
+}
+Mail::raw($req->message, function ($message) use ($data) {
+$message->to($data->email)
+->subject('Atbilde no administrācijas');
+});
+$type = isset($data->tour_id) ? 'booking_email' : 'request_email';
+DB::table('messages')->insert([
+'request_id' => $data->id,
+'email' => $data->email,
+'message' => $req->message,
+'sender' => 'admin',
+'type' => $type,
+'created_at' => now(),
+'updated_at' => now()
+]);
 
-  DB::table('messages')->insert([
-       'request_id' => $data->id,
-       'email' => $data->email,
-       'message' => $req->message,
-       'sender' => 'admin',
-       'type' => 'email',
-       'created_at' => now(),
-       'updated_at' => now()
-   ]);
-   return back()->with('success', 'Nosūtīts!');
+return back()->with('success', 'Nosūtīts!');
+
+
+
+
 //    $data = DB::table('requests')->where('token', $token)->first();
 //    if (!$data) {
 //        $data = DB::table('bookings')->where('token', $token)->first();
@@ -501,34 +508,23 @@ public function sendEmail(Request $req, $token)
 //    ]);
 //    return back()->with('success', 'Nosūtīts!');
 }
-public function liveSend(Request $req, $id)
+public function liveSend(Request $req, $type, $id)
 {
-   $request = DB::table('requests')->where('id', $id)->first();
-   if ($request) {
-       DB::table('messages')->insert([
-           'request_id' => $id,
-           'email' => $request->email,
-           'message' => $req->message,
-           'sender' => 'admin',
-           'type' => 'request', 
-           'is_read'=> 0,
-           'created_at' => now(),
-           'updated_at' => now()
-       ]);
-       return back();
+   if ($type == 'request') {
+       $data = DB::table('requests')->where('id', $id)->first();
+   } else {
+       $data = DB::table('bookings')->where('id', $id)->first();
    }
-   $booking = DB::table('bookings')->where('id', $id)->first();
-   if ($booking) {
-       DB::table('messages')->insert([
-           'request_id' => $id,
-           'email' => $booking->email,
-           'message' => $req->message,
-           'sender' => 'admin',
-           'type' => 'booking',
-           'created_at' => now(),
-           'updated_at' => now()
-       ]);
-   }
+   DB::table('messages')->insert([
+       'request_id' => $id,
+       'email' => $data->email,
+       'message' => $req->message,
+       'sender' => 'admin',
+       'type' => $type, 
+       'is_read' => 0,
+       'created_at' => now(),
+       'updated_at' => now()
+   ]);
    return back();
 }
 

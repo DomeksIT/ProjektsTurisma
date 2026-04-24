@@ -74,9 +74,9 @@ body {
 <h3 class="text-white text-center mb-4">
    Individuālais pieprasījums
 </h3>
-@if(session('ok'))
+@if(session('success'))
 <div class="alert alert-success">
-   {{ session('ok') }}
+   {{ session('success') }}
 </div>
 @endif
 <div class="glass-card p-4">

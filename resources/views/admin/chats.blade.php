@@ -38,7 +38,7 @@ Neizlasītie
 </td>
 <td>{{ $chat->destination }}</td>
 <td>
-<a href="/admin/livechat/{{ $chat->id }}" class="btn btn-warning btn-sm">
+<a href="/admin/livechat/{{ $chat->type == 'Individuālais' ? 'request' : 'booking' }}/{{ $chat->id }}" class="btn btn-warning btn-sm">
  Atvērt
  @if($chat->unread>0)
  <span class="badge bg-danger">{{ $chat->unread }}</span>

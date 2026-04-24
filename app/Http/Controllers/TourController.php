@@ -283,7 +283,7 @@ $link",
                 ->subject('Pieteikuma apstiprinājums');
         }
     );
-    return back()->with('success', 'Pieprasījums veiksmīgi nosūtīts!');
+   return redirect('/tours/' . $request->tour_id) ->with('success', 'Pieprasījums veiksmīgi nosūtīts!');
 }
  
 // public function request(Request $request)

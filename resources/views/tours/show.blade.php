@@ -76,9 +76,9 @@ Kategorija: {{ $tour->category ?? 'Nav kategorijas' }}
 {{ $tour->description }}
 </div>
 <hr class="mb-5">
-@if(session('ok'))
+@if(session('success'))
 <div class="alert alert-success">
-{{ session('ok') }}
+{{ session('success') }}
 </div>
 @endif
 <h2 class="mb-4">Pieteikšanās</h2>

@@ -188,11 +188,11 @@ Skatīt
 <h5 class="modal-title">Apraksts</h5>
 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
 </div>
-<div class="modal-body">
+<div class="modal-body"  style=" word-break: break-word;" >
 {{ $r->description }}
 </div>
 <div class="modal-footer">
-<button class="btn btn-secondary" data-bs-dismiss="modal">Aizvērt</button>
+<button class="btn btn-secondary" data-bs-dismiss="modal" >Aizvērt</button>
 </div>
 </div>
 </div>
