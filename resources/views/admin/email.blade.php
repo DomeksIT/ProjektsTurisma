@@ -18,44 +18,34 @@
 <b>📅 Datumi:</b> {{ $data->dates }}
 @endif
 </div>
-</div>
-<div class="card bg-dark text-white p-3 mb-2"
- style="max-height:300px; overflow-y:auto;" id="chat-box">
-@if(!empty($messages) && count($messages) > 0)
+<div class="card bg-dark text-white p-3 mb-2" style="max-height:300px;overflow-y:auto" id="chat-box">
+@if($messages && count($messages))
 @foreach($messages as $m)
 <div class="mb-2 text-end">
-<div class="d-inline-block p-2 rounded bg-success" style="max-width:70%;">
+<div class="d-inline-block p-2 rounded bg-success" style="max-width:70%">
 {{ $m->message }}
+@if($m->file)
 <br>
-<small class="text-light">
-{{ $m->created_at }}
-</small>
+<a href="{{ asset('storage/'.$m->file) }}" target="_blank" class="text-white text-decoration-underline">📎 fails</a>
+@endif
+<br>
+<small class="text-light">{{ $m->created_at }}</small>
 </div>
 </div>
-        @endforeach
-    @else
-<div class="text-center text-muted">
-            Nav nosūtītu ziņu
+@endforeach
+@else
+<div class="text-center text-white">Nav nosūtītu ziņu</div>
+@endif
 </div>
-    @endif
-</div>
-<form method="POST" action="/admin/email/{{ $data->token }}" class="mt-2">
+<form method="POST" action="/admin/email/{{ $data->token }}" enctype="multipart/form-data" class="mt-2">
 @csrf
-<div class="input-group">
-<input type="text"
-           name="message"
-           class="form-control"
-           placeholder="Raksti ziņu..."
-           required>
-<button class="btn btn-success">
-Sūtīt
-</button>
-</div>
+<input type="text" name="message" class="form-control mb-2" placeholder="Raksti ziņu..." required>
+<input type="file" name="file" class="form-control mb-2" accept=".pdf, .doc, .docx">
+<button type="submit" class="btn btn-success w-100">Sūtīt</button>
 </form>
 </div>
 <script>
-let chatBox = document.getElementById('chat-box');
-chatBox.scrollTop = chatBox.scrollHeight;
+let chatBox=document.getElementById('chat-box');
+chatBox.scrollTop=chatBox.scrollHeight;
 </script>
 @endsection
- 

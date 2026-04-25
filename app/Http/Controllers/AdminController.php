@@ -459,29 +459,43 @@ public function email($token)
 
 public function sendEmail(Request $req, $token)
 {
-$data = DB::table('requests')->where('token', $token)->first();
-if (!$data) {
-$data = DB::table('bookings')->where('token', $token)->first();
+    $req->validate([
+        'message' => 'required',
+        'file' => 'nullable|mimes:pdf,doc,docx|max:2048'
+    ]);
+    $data = DB::table('requests')->where('token', $token)->first();
+    if (!$data) {
+        $data = DB::table('bookings')->where('token', $token)->first();
+    }
+    if (!$data) {
+        return back();
+    }
+    $filePath = null;
+    if ($req->hasFile('file')) {
+        $filePath = $req->file('file')->store('uploads', 'public');
+    }
+    Mail::send([], [], function ($message) use ($data, $req, $filePath) {
+        $message->to($data->email)
+                ->subject('Atbilde no administrācijas')
+                ->setBody($req->message);
+        if ($filePath) {
+       $message->attach(storage_path('app/public/' . $filePath));
+     }
+    });
+    $type = isset($data->tour_id) ? 'booking_email' : 'request_email';
+    DB::table('messages')->insert([
+        'request_id' => $data->id,
+        'email' => $data->email,
+        'message' => $req->message,
+        'file' => $filePath, 
+        'sender' => 'admin',
+        'type' => $type,
+        'created_at' => now(),
+    'updated_at' => now()
+    ]);
+    return back()->with('success', 'Nosūtīts!');
 }
-if (!$data) {
-return back();
-}
-Mail::raw($req->message, function ($message) use ($data) {
-$message->to($data->email)
-->subject('Atbilde no administrācijas');
-});
-$type = isset($data->tour_id) ? 'booking_email' : 'request_email';
-DB::table('messages')->insert([
-'request_id' => $data->id,
-'email' => $data->email,
-'message' => $req->message,
-'sender' => 'admin',
-'type' => $type,
-'created_at' => now(),
-'updated_at' => now()
-]);
-
-return back()->with('success', 'Nosūtīts!');
+ 
 
 
 
@@ -507,7 +521,6 @@ return back()->with('success', 'Nosūtīts!');
 //        'updated_at' => now()
 //    ]);
 //    return back()->with('success', 'Nosūtīts!');
-}
 public function liveSend(Request $req, $type, $id)
 {
    if ($type == 'request') {
