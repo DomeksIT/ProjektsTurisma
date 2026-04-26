@@ -1,6 +1,6 @@
 @extends('layouts.admin')
 @section('content')
-<div class="container text-white">
+<div class="container text-white" style="max-width: 700px;">
 <a href="/admin/bookings" class="btn btn-outline-light mb-3">Atpakaļ</a>
 <h4 class="mb-3">✉️ Atbildēt klientam</h4>
 <div class="card bg-secondary text-white p-3 mb-3">
@@ -18,7 +18,7 @@
 <b>📅 Datumi:</b> {{ $data->dates }}
 @endif
 </div>
-<div class="card bg-dark text-white p-3 mb-2" style="max-height:300px;overflow-y:auto" id="chat-box">
+<div class="card bg-dark text-white p-4 mb-3" style="max-height:450px;overflow-y:auto; border-radius:21" id="chat-box">
 @if($messages && count($messages))
 @foreach($messages as $m)
 <div class="mb-2 text-end">

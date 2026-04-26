@@ -9,10 +9,10 @@
 <div class="card bg-dark border-0 p-3 mb-4">
     <div class="mb-3">
 <div class="text-white fw-semibold">
-🔎 Meklē un filtrē ceļojumus
+🔎 Meklē ceļojumus
 </div>
 <div class="text-white-50 small">
-Izmanto meklēšanu vai filtrus, lai ātri atrastu sev piemērotu ceļojumu
+Izmanto meklēšanu, lai ātri atrastu sev piemērotu ceļojumu
 </div>
 </div>
 <form method="GET" id="filterForm">
