@@ -21,7 +21,7 @@ Klients:
 </div>
    @endforeach
 </div>
-<form method="POST" action="/admin/livechat/{{ $request->id }}" class="mt-3">
+<form method="POST" action="/admin/livechat/{{ $type }}/{{ $data->id }}" class="mt-3">
 @csrf
 <div class="input-group">
 <input type="text" name="message" class="form-control" placeholder="Rakstīt ziņu..." required>

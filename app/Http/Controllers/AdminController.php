@@ -393,7 +393,7 @@ public function liveChat($type, $id)
        ->get();
    return view('admin.livechat', [
        'messages' => $messages,
-       'request' => $data,
+       'data' => $data,
        'type' => $type
    ]);
 }

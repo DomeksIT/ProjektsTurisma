@@ -131,7 +131,6 @@ return view('tours.show',[
 // }
 
  public function apply(Request $bookings, $id)
-
 {
     $bookings->validate([
         'name' => ['required','string','min:3','max:30','regex:/^[A-Za-zĀ-ž\s]+$/u'],
@@ -169,21 +168,20 @@ return view('tours.show',[
 
     }
     $link = url('/chat/' . $token);
-    try {
-        Mail::raw(
-            "Jūsu pieteikums ir veiksmīgi saņemts!
-Mēs ar jums sazināsimies.
+try {
+Mail::raw(
+"Jūsu pieteikums ir veiksmīgi saņemts! Mēs ar jums sazināsimies.
 Ja jums ir papildu jautājumi, izmantojiet čatu:
 $link",
-            function ($message) use ($bookings) {
-                $message->to($bookings->email)
-                    ->subject('Pieteikuma apstiprinājums');
-            }
-        );
-    } catch (\Exception $e) {
-        \Log::error('Mail error: ' . $e->getMessage());
-    }
-    return back()->with('success', 'Pieteikums veiksmīgi nosūtīts!');
+function ($message) use ($bookings) {
+$message->to($bookings->email)
+>subject('Pieteikuma apstiprinājums');
+}
+);
+} catch (\Exception $e) {
+\Log::error('Mail error: ' . $e->getMessage());}
+
+return back()->with('success', 'Pieteikums veiksmīgi nosūtīts!');
 }
  
  
@@ -232,9 +230,7 @@ public function requestCancel($id)
 }
 
 public function request(Request $request)
-
 {
-
     $request->validate([
         'name' => ['required','min:3','max:50','regex:/^[A-Za-zĀ-ž\s]+$/u'],
         'phone' => ['required','regex:/^\+?[0-9]{8,15}$/'],
