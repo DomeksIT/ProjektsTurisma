@@ -175,7 +175,7 @@ Ja jums ir papildu jautājumi, izmantojiet čatu:
 $link",
 function ($message) use ($bookings) {
 $message->to($bookings->email)
->subject('Pieteikuma apstiprinājums');
+->subject('Pieteikuma apstiprinājums');
 }
 );
 } catch (\Exception $e) {

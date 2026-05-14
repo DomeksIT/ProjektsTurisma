@@ -165,7 +165,5 @@ fields.forEach(field => {
 });
 checkFields();
 </script>
-
-
 </html>
  

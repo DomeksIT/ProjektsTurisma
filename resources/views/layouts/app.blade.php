@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>{{ $title ?? 'SELENAL - Ceļojumi' }}</title>
+<title>{{ $title ?? 'Domeks - Ceļojumi' }}</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -18,10 +18,10 @@ html {
 <nav class="navbar navbar-expand-lg navbar-dark nav-glass sticky-top">
 <div class="container">
 <div class="d-flex align-items-center gap-2">
-<img src="{{ asset('images/selenal-logo.png') }}"
+<img src="{{ asset('images/tours/logo.png') }}"
             style="height:40px; border-radius:8px;">
 <div>
-<div class="fw-bold">SELENA L</div>
+<div class="fw-bold">Domeks Travel</div>
 <div class="small text-white-50">Tūrisma aģentūra</div>
 </div>
 </div>
@@ -110,10 +110,10 @@ Sākt izvēli
                Kontakti
 </div>
 <div class="text-white-50">
-    Rēzekne, Kosmonautu iela 3<br>
-    Tālr.: +37164634480<br>
-    E-pasts: travel@selenal.lv<br>
-    Ārkārtas gadījumos: (371) 26554137
+    Rēzekne, Noliktavu iela<br>
+    Tālr.: +371xxxxx<br>
+    E-pasts: xxxxx@domeks.lv<br>
+    Ārkārtas gadījumos: (371) xxxxxxxx
 </div>
 </div>
 <div class="col-lg-4">
@@ -130,13 +130,20 @@ Sākt izvēli
                Atrašanas vieta
 </div>
 <div class="ratio ratio-16x9 rounded-4 overflow-hidden shadow-sm">
-<iframe src="https://www.google.com/maps?q=R%C4%93zekne%20Kosmonautu%20iela%203&output=embed"></iframe>
+<iframe
+   src="https://www.google.com/maps?q=56.5254707,27.3726608&output=embed"
+   width="100%"
+   height="250"
+   style="border:0;"
+   allowfullscreen=""
+   loading="lazy">
+</iframe>
 </div>
 </div>
 </div>
 <hr class="border-light opacity-25 my-4">
 <div class="text-white-50 small">
-       SELENA L © {{ date('Y') }}
+       Domeks © {{ date('Y') }}
 </div>
 </div>
 </footer>
