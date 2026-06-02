@@ -11,11 +11,11 @@ return [
    'regex' => ':attribute formāts nav pareizs.',
    'numeric' => ':attribute jābūt skaitlim.',
    'attributes' => [
-       'name' => 'Vārds un uzvārds',
-       'email' => 'E-pasts',
-       'phone' => 'Telefons',
-       'destination' => 'Galamērķis',
-       'description' => 'Apraksts',
+       'name' => 'Vārdam un uzvārdam',
+       'email' => 'E-pasta',
+       'phone' => 'Telefona',
+       'destination' => 'Galamērķim',
+       'description' => 'Aprakstam',
        'dates' => 'Datums',
    ],
 ];
